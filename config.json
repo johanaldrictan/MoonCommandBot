@@ -1,0 +1,9 @@
+{
+  "token": "",
+  "join_message": "Moon CommandBot reporting for duty. I am here to help organize tasks for all crew members.",
+  "prefix": [
+    "MC!"
+  ],
+  "playing": "Human Commander",
+  "trello_key": ""
+}
