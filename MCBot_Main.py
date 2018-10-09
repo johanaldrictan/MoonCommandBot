@@ -38,11 +38,16 @@ async def on_ready():
     await client.change_presence(game=Game(name='Human Commander'))
     print("Logged in as " + client.user.name)
 
+@client.command(name="hello",
+                description='Greeting')
+async def hello():
+    await client.say("Moon CommandBot reporting for duty. I am here to help organize tasks for all crew members.")
+
 @client.command(name="ping",
                 description='Tests bot connectivity to Trello')
 async def ping():
     start = time.time()
-    boards = client.list_boards()
+    boards = trello_client.list_boards()
     end = time.time()
     embed = discord.Embed(title="Pong!", description="Time elapsed " + (end - start) + "seconds", color="f0efc8")
     await client.say(embed=embed)
