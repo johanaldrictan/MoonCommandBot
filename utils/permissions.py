@@ -1,7 +1,6 @@
 # permissions.py
 # wrapper functions for the implementation of permissions in Discord
 # most functions were grabbed from the discord_bot.py project by AlexFlipnote
-# Author: Johan Tan
 #--------------------------------------------------------------------------
 #import guard
 try:

@@ -1,6 +1,5 @@
 #  MCBot_Main.py
 #  main entry point for the Moon CommandBot
-#  Author: Johan Tan
 #--------------------------------------------------------------------------
 import asyncio
 try:
@@ -11,46 +10,17 @@ try:
 except ImportError:
     print("Discord.py is not installed.\n")
     sys.exit(1)
+from utils import globals
 
+global properties
+extensions = ['admin', 'custom_trello', 'trello_wrapper']
 
-extensions = ['']
+init("config.json")
+properties.discord_bot = MCBot(command_prefix=properties.bot_prefix, prefix=properties.bot_prefix)
 
-client = Bot(command_prefix=BOT_PREFIX)
-trello_client = ""
+for file in os.listdir("cogs"):
+    if file.endswith(".py"):
+        name = file[:-3]
+        bot.load_extension(f"cogs.{name}")
 
-@client.event
-async def on_ready():
-    await client.change_presence(game=Game(name=''))
-    print("Logged in as " + client.user.name)
-
-
-def check_trello():
-    global trello_client
-    if(trello_client == ""):
-        return False
-    else:
-        return True
-
-@client.command()
-async def load(extension):
-    try:
-        client.load_extension(extension)
-        print('Loaded {}'.format(extension))
-    except Exception as error:
-        print('{} cannot be loaded [{}]'.format(extension,error))
-@client.command()
-async def load(extension):
-    try:
-        client.unload_extension(extension)
-        print('unloaded {}'.format(extension))
-    except Exception as error:
-        print('{} cannot be unloaded [{}]'.format(extension,error))
-
-if __name__ == "__main__":
-    for extension in extensions:
-        try:
-            client.load_extension(extension)
-        except Exception as error:
-            print('{} cannot be loaded [{}]'.format(extension,error))
-
-client.run(DISCORD_TK)
+properties.discord_bot.run(properties.discord_tk)

@@ -6,7 +6,7 @@ except ImportError:
     sys.exit(1)
 
 class TrelloWrapper:
-    def __init__(selfs, client):
+    def __init__(self, client):
         self.client = client
     @commands.command()
     async def ping(self):
