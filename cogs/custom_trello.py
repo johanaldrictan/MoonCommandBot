@@ -4,12 +4,13 @@ try:
 except ImportError:
     print("Discord.py is not installed.\n")
     sys.exit(1)
-import
+from utils import globals, trello_helpers
+
+global properties
 
 class CustomTrello:
-    def __init__(self, client, trello_client):
+    def __init__(self, client):
         self.client = client
-        self.trello_client = trello_client
     @commands.command(name="ping",
                     description='Tests bot connectivity to Trello')
     async def ping(self):
@@ -29,12 +30,10 @@ class CustomTrello:
     @commands.command(name="link",
                     description="Links the bot to the trello account with the correct token")
     async def link(api_token):
-        global API_TK
-        API_TK = api_token
-        global trello_client
-        trello_client = TrelloClient(
-            api_key=API_KY,
-            token=API_TK
+        proprties.trello_tk = api_token
+        properties.trello_client = TrelloClient(
+            api_key=proprties.trello_ky,
+            token=proprties.trello_tk
         )
         await message("Received token of Token: " + API_TK)
 

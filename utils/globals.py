@@ -6,7 +6,7 @@ def init(file):
     global properties
     properties = MoonCommandBotProperties()
     config = json_helper.load_json(file)
-    properties.trello_api_key = config.trello_key
+    properties.trello_ky = config.trello_key
     properties.discord_tk = config.discord_token
     properties.bot_color = config.bot_color
     properties.bot_prefix = config.bot_prefix
