@@ -12,18 +12,20 @@ try:
 except ImportError:
     print("Discord.py is not installed.\n")
     sys.exit(1)
-from utils import globals
 import MCBot
 
-global properties
-extensions = ['admin', 'custom_trello', 'trello_wrapper']
+MCBot = MCBot.MCBot()
 
-globals.init("config.json")
-globals.properties.discord_bot = MCBot.MCBot(command_prefix=globals.properties.bot_prefix, prefix=globals.properties.bot_prefix)
+def init(file):
+    properties = bot_properties.MoonCommandBotProperties()
+    config = json_helper.load_json(file)
+    properties.trello_ky = config.trello_key
+    properties.discord_tk = config.discord_token
+    properties.bot_color = config.bot_color
+    properties.bot_prefix = config.bot_prefix
+    properties.join_message = config.join_message
+    properties.current_game = config.playing
 
-for file in os.listdir("cogs"):
-    if file.endswith(".py"):
-        name = file[:-3]
-        globals.properties.discord_bot.load_extension(f"cogs.{name}")
+init("config.json")
 
-properties.discord_bot.run(properties.discord_tk)
+globals.properties.discord_bot.run(globals.properties.discord_tk)
