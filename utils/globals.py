@@ -4,6 +4,7 @@ global properties
 properties = ''
 #file is the config.json file
 def init(file):
+    global properties
     properties = bot_properties.MoonCommandBotProperties()
     config = json_helper.load_json(file)
     properties.trello_ky = config.trello_key

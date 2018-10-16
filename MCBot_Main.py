@@ -3,6 +3,7 @@
 #--------------------------------------------------------------------------
 import asyncio
 import sys
+import os
 try:
     from discord.ext import commands
     from discord.ext.commands import Bot
@@ -18,11 +19,11 @@ global properties
 extensions = ['admin', 'custom_trello', 'trello_wrapper']
 
 globals.init("config.json")
-globals.properties.discord_bot = MCBot(command_prefix=globals.properties.bot_prefix, prefix=globals.properties.bot_prefix)
+globals.properties.discord_bot = MCBot.MCBot(command_prefix=globals.properties.bot_prefix, prefix=globals.properties.bot_prefix)
 
 for file in os.listdir("cogs"):
     if file.endswith(".py"):
         name = file[:-3]
-        properties.discord_bot.load_extension(f"cogs.{name}")
+        globals.properties.discord_bot.load_extension(f"cogs.{name}")
 
 properties.discord_bot.run(properties.discord_tk)
