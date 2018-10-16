@@ -1,10 +1,10 @@
-import bot_properties
-import json_helper
+from utils import bot_properties, json_helper
 
+global properties
+properties = ''
 #file is the config.json file
 def init(file):
-    global properties
-    properties = MoonCommandBotProperties()
+    properties = bot_properties.MoonCommandBotProperties()
     config = json_helper.load_json(file)
     properties.trello_ky = config.trello_key
     properties.discord_tk = config.discord_token

@@ -1,3 +1,4 @@
+import sys
 try:
     from utils import permissions
     from discord.ext.commands import AutoShardedBot

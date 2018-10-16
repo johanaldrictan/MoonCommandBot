@@ -8,7 +8,7 @@ from collections import namedtuple
 def _json_object_hook(d):
     return namedtuple('X', d.keys())(*d.values())
 def json2obj(data):
-    return json.loads(data, object_hook=_json_object_hook)
+    return json.load(data, object_hook=_json_object_hook)
 def load_json(file):
     try:
         with open(file, encoding='utf8') as data:
