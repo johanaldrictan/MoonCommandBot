@@ -30,8 +30,8 @@ class CustomTrello:
     @commands.command(name="link",
                     description="Links the bot to the trello account with the correct token")
     async def link(api_token):
-        proprties.trello_tk = api_token
-        properties.trello_client = TrelloClient(
+        globals.proprties.trello_tk = api_token
+        globals.properties.trello_client = TrelloClient(
             api_key=proprties.trello_ky,
             token=proprties.trello_tk
         )

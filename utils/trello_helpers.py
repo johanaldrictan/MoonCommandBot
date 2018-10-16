@@ -1,8 +1,9 @@
-import globals
+from utils import globals
+
+global properties
 
 def check_trello():
-    global properties.trello_client
-    if(properties.trello_client == ""):
+    if(globals.properties.trello_client == ""):
         return False
     else:
         return True

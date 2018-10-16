@@ -10,13 +10,12 @@ import asyncio
 from asyncio.subprocess import PIPE
 from discord.ext import commands
 from io import BytesIO
-from utils import permissions, bot_properties
+from utils import permissions, globals, bot_properties
 
 
 class Admin:
     def __init__(self, bot):
         self.bot = bot
-        self.config = default.get("config.json")
         self._last_result = None
 
     @commands.command(name="hello",
@@ -29,7 +28,7 @@ class Admin:
                     pass_context = True)
     async def assign(ctx):
         global properties
-        properties.channel = ctx.message.channel
+        globals.properties.channel = ctx.message.channel
         await send_message(self.client,"Assigned to " + str(ctx.message.channel.name))
 
     @commands.command(name="logout")
@@ -77,7 +76,7 @@ class Admin:
             return await ctx.send(f"```diff\n- {e}```")
         await ctx.send(f"Unloaded extension **{name}.py**")
 
-    @change.command(name="playing")
+    @commands.command(name="playing")
     @commands.check(permissions.is_administrator)
     async def change_playing(self, ctx, *, playing: str):
         """ Change playing status. """
@@ -93,7 +92,7 @@ class Admin:
         except Exception as e:
             await ctx.send(e)
 
-    @change.command(name="nickname")
+    @commands.command(name="nickname")
     @commands.check(permissions.is_administrator)
     async def change_nickname(self, ctx, *, name: str = None):
         """ Change nickname. """

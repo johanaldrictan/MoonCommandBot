@@ -15,4 +15,4 @@ class TrelloWrapper:
     async def ping(self):
         await self.client.say('Pong!')
 def setup(client):
-    client.add_cog(CustomTrello(client))
+    client.add_cog(TrelloWrapper(client))
