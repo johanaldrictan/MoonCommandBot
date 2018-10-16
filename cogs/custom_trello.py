@@ -35,7 +35,7 @@ class CustomTrello:
             api_key=proprties.trello_ky,
             token=proprties.trello_tk
         )
-        await message("Received token of Token: " + API_TK)
+        await message("Received token of Token: " + properties.trello_tk)
 
 
 def setup(client):
