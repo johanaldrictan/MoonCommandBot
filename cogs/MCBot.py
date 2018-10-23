@@ -1,3 +1,4 @@
+# Author: Johan Tan
 import sys
 try:
     from discord.ext.commands import Bot
@@ -6,8 +7,8 @@ except ImportError:
     sys.exit(1)
 from utils import permissions
 class MCBot:
-    def __init__(self):
-        self.discord_client = ''
+    def __init__(self, client):
+        self.bot = client
         self.trello_client = ''
         self.discord_tk = ''
         self.trello_ky = ''
@@ -22,7 +23,7 @@ class MCBot:
                     pass_context = True)
     async def assign(ctx):
         global properties
-        globals.properties.channel = ctx.message.channel
+        self.channel = ctx.message.channel
         await discord_helpers.send_message(self.bot,"Assigned to " + str(ctx.message.channel.name))
 
     @commands.command(name="logout")
@@ -55,7 +56,9 @@ class MCBot:
             token=proprties.trello_tk
         )
         await message("Received token of Token: " + properties.trello_tk)
-    
+
+
+#DISCORD MESSAGE HELPERS
 async def send_message(client,message):
     #if channel is unassigned, use the regular channel
     if(globals.properties.channel == ""):

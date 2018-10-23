@@ -1,14 +1,22 @@
-# permissions.py
-# wrapper functions for the implementation of permissions in Discord
-# most functions were grabbed from the discord_bot.py project by AlexFlipnote
-#--------------------------------------------------------------------------
-#import guard
-try:
-    from discord.ext import commands
-    import discord
-except ImportError:
-    print("Discord.py is not installed.\n")
-    sys.exit(1)
+import discord
+
+from utils import repo
+from discord.ext import commands
+
+
+async def check_permissions(ctx, perms, *, check=all):
+    if ctx.author.id in repo.owners:
+        return True
+
+    resolved = ctx.channel.permissions_for(ctx.author)
+    return check(getattr(resolved, name, None) == value for name, value in perms.items())
+
+
+def has_permissions(*, check=all, **perms):
+    async def pred(ctx):
+        return await check_permissions(ctx, perms, check=check)
+    return commands.check(pred)
+
 
 def can_send(ctx):
     return isinstance(ctx.channel, discord.DMChannel) or ctx.channel.permissions_for(ctx.guild.me).send_messages
@@ -28,6 +36,3 @@ def can_react(ctx):
 
 def is_nsfw(ctx):
     return isinstance(ctx.channel, discord.DMChannel) or ctx.channel.is_nsfw()
-
-def is_administrator(ctx):
-    return ctx.message.author.server_permissions.administrator

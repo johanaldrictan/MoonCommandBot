@@ -1,3 +1,8 @@
 pip
 py-trello
-git+https://github.com/Rapptz/discord.py@rewrite#egg=discord.py[voice]
+git+https://github.com/Rapptz/discord.py@rewrite
+psutil
+asyncio
+timeago
+yarl<1.2
+pytz
