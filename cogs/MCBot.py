@@ -1,78 +1,60 @@
 # Author: Johan Tan
 import sys
 try:
-    from discord.ext.commands import Bot
+    import discord
+    from discord.ext import commands
 except ImportError:
     print("Discord.py is not installed.\n")
     sys.exit(1)
-from utils import permissions
+from utils import permissions, discord_helpers, default
 class MCBot:
-    def __init__(self, client):
-        self.bot = client
+    def __init__(self, bot):
+        config = default.get("config.json")
+        self.bot = bot
         self.trello_client = ''
-        self.discord_tk = ''
-        self.trello_ky = ''
+        self.discord_tk = config.discord_token
+        self.trello_ky = config.trello_key
         self.trello_tk = ''
-        self.bot_color = ''
-        self.bot_prefix = ''
+        self.bot_color = config.bot_color
         self.channel = ''
-        self.join_message = ''
-        self.current_game = ''
+        self.join_message = config.join_message
+        self.current_game = config.playing
     @commands.command(name="assign",
                     description="Assigns bot to the current channel the command is on.",
                     pass_context = True)
     async def assign(ctx):
-        global properties
         self.channel = ctx.message.channel
         await discord_helpers.send_message(self.bot,"Assigned to " + str(ctx.message.channel.name))
 
-    @commands.command(name="logout")
-    async def logout(self):
-        await discord_helpers.send_message(self.bot,"Logging out.")
-        print("Logging out.")
-        await self.bot.logout()
-    @commands.command(name="ping",
+    @commands.command(name="pingtrello",
                     description='Tests bot connectivity to Trello')
-    async def ping(self):
+    async def ping_trello(self):
         if(check_trello()):
             start = time.time()
-            boards = trello_client.list_boards()
+            boards = self.trello_client.list_boards()
             end = time.time()
-            embed = discord.Embed(title="Pong!", description="Time elapsed {time:3f} seconds".format(time=(end-start)), color=color)
+            embed = discord.Embed(title="Pong!", description="Time elapsed {time:3f} seconds".format(time=(end-start)), color=self.bot_color)
             await send_embed(embed)
         else:
-            embed = discord.Embed(title="Error!", description="Trello client not connected. Please use MC!token and MC!link to connect the trello to the bot.", color=color)
-            await send_embed(selfembed)
+            embed = discord.Embed(title="Error!", description="Trello client not connected. Please use MC!token and MC!link to connect the trello to the bot.", color=self.bot_color)
+            await discord_helpers.send_embed(self,embed)
     @commands.command(name="token",
                     description="Supplies the user a link to determine the token that the bot will use.")
-    async def token():
-        await message("https://trello.com/1/authorize?expiration=never&scope=read,write,account&response_type=token&name=Moon%20CommandBot&key="+API_KY)
+    async def token(self):
+        await message("https://trello.com/1/authorize?expiration=never&scope=read,write,account&response_type=token&name=Moon%20CommandBot&key="+self.trello_ky)
     @commands.command(name="link",
                     description="Links the bot to the trello account with the correct token")
-    async def link(api_token):
-        globals.proprties.trello_tk = api_token
-        globals.properties.trello_client = TrelloClient(
-            api_key=proprties.trello_ky,
-            token=proprties.trello_tk
+    async def link(self,api_token):
+        self.trello_tk = api_token
+        self.trello_client = TrelloClient(
+            api_key=self.trello_ky,
+            token=self.trello_tk
         )
-        await message("Received token of Token: " + properties.trello_tk)
-
-
-#DISCORD MESSAGE HELPERS
-async def send_message(client,message):
-    #if channel is unassigned, use the regular channel
-    if(globals.properties.channel == ""):
-        await client.say(message)
-    else:
-        await client.send_message(globals.properties.channel,message)
-async def send_embed(client,embed):
-    #if channel is unassigned, use the regular channel
-    if(globals.properties.channel == ""):
-        await client.say(embed=embed)
-    else:
-        await client.send_message(globals.properties.channel,embed=embed)
-def check_trello():
-    if(globals.properties.trello_client == ""):
-        return False
-    else:
-        return True
+        await message("Received token of Token: " + self.trello_tk)
+    def check_trello():
+        if(self.trello_client == ""):
+            return False
+        else:
+            return True
+def setup(bot):
+    bot.add_cog(MCBot(bot))
