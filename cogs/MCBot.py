@@ -59,6 +59,106 @@ class MCBot:
             token=self.trello_tk
         )
         await self.send_message(ctx, "Received token of Token: " + self.trello_tk)
+"""
+================================================================================
+DEFAULT FUNCTIONALITY
+================================================================================
+    These functions are functions that are default to the TrelloAPI
+"""
+    @commands.command()
+    async def addlist(self, ctx):
+        return
+    @commands.command()
+    async def cardattach(self, ctx):
+
+    @commands.command()
+    async def closecard(self, ctx):
+
+    @commands.command()
+    async def closelist(self, ctx):
+
+    @commands.command()
+    async def createcard(self, ctx):
+
+    @commands.command()
+    async def editdesc(self, ctx):
+
+    @commands.command()
+    async def movecard(self, ctx):
+
+    @commands.command()
+    async def opencard(self, ctx):
+
+    @commands.command()
+    async def openlist(self, ctx):
+
+    @commands.command()
+    async def removecard(self, ctx):
+
+    @commands.command()
+    async def renamecard(self, ctx):
+
+    @commands.command()
+    async def renamelist(self, ctx):
+
+    @commmands.command()
+    async def addwebhook(self, ctx):
+
+    @commands.command()
+    async def editwebhook(self, ctx):
+
+    @commands.command()
+    async def removewebhook(self, ctx):
+
+    @commands.command()
+    async def webhooks(self, ctx):
+
+    @commands.command()
+    async def boardinfo(self, ctx):
+
+    @commands.command()
+    async def boards(self, ctx):
+
+    @commands.command()
+    async def card(self, ctx):
+
+    @commands.command()
+    async def lists(self, ctx):
+
+    @commands.command()
+    async def switch(self, ctx):
+
+    @commands.command()
+    async def viewlist(self, ctx):
+
+    @commands.command()
+    async def invitetoboard(self, ctx):
+
+    @commands.command()
+    async def removefromboard(self, ctx):
+
+    @commands.command()
+    async def attach(self, ctx):
+        self.NotImplemented(ctx)
+
+"""
+================================================================================
+CUSTOM FUNCTIONALITY
+================================================================================
+    These are bot functionalities that are custom to MCBot itself
+"""
+    async def daily_reminder_task():
+        """ This function individually messages all the users ho have registered
+            their trello account to the bot"""
+    async def on_ready(self):
+        """ Event to initialize bot tasks and other bot functions"""
+        self.loop.create_task(reminder_task)
+
+"""
+================================================================================
+HELPER FUNCTIONS
+================================================================================
+"""
     def check_trello(self):
         if(self.trello_client == ""):
             return False
@@ -76,5 +176,7 @@ class MCBot:
             await channel.send(embed=embed)
         else:
             await self.channel.send(embed=embed)
+    def NotImplemented(self, ctx):
+        await self.send_message(ctx, "Function not implemented yet")
 def setup(bot):
     bot.add_cog(MCBot(bot))
