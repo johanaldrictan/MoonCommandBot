@@ -121,9 +121,6 @@ class MCBot:
     async def boardinfo(self, ctx):
 
     @commands.command()
-    async def boards(self, ctx):
-
-    @commands.command()
     async def card(self, ctx):
 
     @commands.command()
@@ -146,6 +143,14 @@ class MCBot:
         self.NotImplemented(ctx)
     '''
 
+    @commands.command()
+    async def boards(self, ctx):
+        if(self.check_trello()):
+            boards = self.trello_client.list_boards()
+            await send_message(ctx, boards)
+        else:
+            await send_message(ctx, "Trello not initialized get the token with ```MC!token``` and pass the given token into ```MC!link```.")
+
     #
     #===============================================================================
     #CUSTOM FUNCTIONALITY
@@ -163,11 +168,11 @@ class MCBot:
         """ Event to initialize bot tasks and other bot functions"""
         self.bot.loop.create_task(self.daily_reminder_task())
 
-    async def on_message(self, ctx):
-        if(ctx.message.author == self.bot.user):
+    async def on_message(self, msg):
+        if(msg.author == self.bot.user):
             return
-        if(ctx.message.content.startswith(self.config.bot_prefix)):
-            await self.send_message(ctx, "Invalid command")
+        if(msg.content.startswith(self.config.prefix)):
+            await self.send_message(msg, "Invalid command")
             await events.send_cmd_help(ctx)
 
     #
@@ -185,6 +190,12 @@ class MCBot:
     async def send_message(self, ctx, message):
         if(self.channel == ""):
             channel =  ctx.message.channel
+            await channel.send(message)
+        else:
+            await self.channel.send(message)
+    async def send_message(self, msg, message):
+        if(self.channel == ""):
+            channel =  msg.channel
             await channel.send(message)
         else:
             await self.channel.send(message)
