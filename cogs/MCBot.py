@@ -13,6 +13,7 @@ try:
 except ImportError:
     print("Py-trello is not installed.\n")
 from utils import permissions, default
+from cogs import events
 class MCBot:
     def __init__(self, bot):
         self.config = default.get("config.json")
@@ -29,14 +30,14 @@ class MCBot:
 
     @commands.command()
     async def assign(self,ctx):
-        '''Assigns bot to the current channel
-        the command is on.'''
+        """Assigns bot to the current channel
+        the command is on."""
         self.channel = ctx.message.channel
         await self.send_message(ctx, "Assigned to " + str(ctx.message.channel.name))
 
     @commands.command()
     async def pingtrello(self, ctx):
-        '''Checks bot's connectivity to Trello'''
+        """Checks bot's connectivity to Trello"""
         if(self.check_trello()):
             start = time.time()
             boards = self.trello_client.list_boards()
@@ -48,13 +49,13 @@ class MCBot:
             await self.send_embed(ctx, embed)
     @commands.command()
     async def token(self, ctx):
-        '''Supplies the user a link to determine
-        the token that the bot will use.'''
+        """Supplies the user a link to determine
+        the token that the bot will use."""
         await self.send_message(ctx, "https://trello.com/1/authorize?expiration=never&scope=read,write,account&response_type=token&name=Moon%20CommandBot&key="+self.trello_ky)
     @commands.command()
     async def link(self, ctx, api_token):
-        '''Links the bot to the trello account
-         with the correct token'''
+        """Links the bot to the trello account
+         with the correct token"""
         self.trello_tk = api_token
         self.trello_client = TrelloClient(
             api_key=self.trello_ky,
@@ -152,20 +153,22 @@ class MCBot:
     #    These are bot functionalities that are custom to MCBot itself
     #
     async def daily_reminder_task(self):
-        ''' This function individually messages all the users ho have registered
-            their trello account to the bot '''
+        """ This function individually messages all the users ho have registered
+            their trello account to the bot """
         if(datetime.datetime.now().date() > self.last_reminded):
             self.last_reminded = datetime.datetime.now().date()
             print("reminded")
 
     async def on_ready(self):
-        ''' Event to initialize bot tasks and other bot functions'''
+        """ Event to initialize bot tasks and other bot functions"""
         self.bot.loop.create_task(self.daily_reminder_task())
 
     async def on_message(self, ctx):
         if(ctx.message.author == self.bot.user):
             return
         if(ctx.message.content.startswith(self.config.bot_prefix)):
+            await self.send_message(ctx, "Invalid command")
+            await events.send_cmd_help(ctx)
 
     #
     #===============================================================================
