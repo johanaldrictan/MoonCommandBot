@@ -1,6 +1,7 @@
 # Author: Johan Tan
 import sys
 import time
+import datetime
 try:
     import discord
     from discord.ext import commands
@@ -14,27 +15,28 @@ except ImportError:
 from utils import permissions, default
 class MCBot:
     def __init__(self, bot):
-        config = default.get("config.json")
+        self.config = default.get("config.json")
         self.bot = bot
         self.trello_client = ''
-        self.discord_tk = config.discord_token
-        self.trello_ky = config.trello_key
+        self.discord_tk = self.config.discord_token
+        self.trello_ky = self.config.trello_key
         self.trello_tk = ''
         self.bot_color = 0xf0efc8
         self.channel = ''
-        self.join_message = config.join_message
-        self.current_game = config.playing
+        self.join_message = self.config.join_message
+        self.current_game = self.config.playing
+        self.last_reminded = datetime.datetime.now().date()
 
     @commands.command()
     async def assign(self,ctx):
-        """Assigns bot to the current channel
-        the command is on."""
+        '''Assigns bot to the current channel
+        the command is on.'''
         self.channel = ctx.message.channel
         await self.send_message(ctx, "Assigned to " + str(ctx.message.channel.name))
 
     @commands.command()
     async def pingtrello(self, ctx):
-        """Checks bot's connectivity to Trello"""
+        '''Checks bot's connectivity to Trello'''
         if(self.check_trello()):
             start = time.time()
             boards = self.trello_client.list_boards()
@@ -46,28 +48,29 @@ class MCBot:
             await self.send_embed(ctx, embed)
     @commands.command()
     async def token(self, ctx):
-        """Supplies the user a link to determine
-        the token that the bot will use."""
+        '''Supplies the user a link to determine
+        the token that the bot will use.'''
         await self.send_message(ctx, "https://trello.com/1/authorize?expiration=never&scope=read,write,account&response_type=token&name=Moon%20CommandBot&key="+self.trello_ky)
     @commands.command()
     async def link(self, ctx, api_token):
-        """Links the bot to the trello account
-         with the correct token"""
+        '''Links the bot to the trello account
+         with the correct token'''
         self.trello_tk = api_token
         self.trello_client = TrelloClient(
             api_key=self.trello_ky,
             token=self.trello_tk
         )
         await self.send_message(ctx, "Received token of Token: " + self.trello_tk)
-"""
-================================================================================
-DEFAULT FUNCTIONALITY
-================================================================================
-    These functions are functions that are default to the TrelloAPI
-"""
+    #
+    #===============================================================================
+    #DEFAULT FUNCTIONALITY
+    #===============================================================================
+    #    These functions are functions that are default to the TrelloAPI
+    #
+    '''
     @commands.command()
     async def addlist(self, ctx):
-        return
+
     @commands.command()
     async def cardattach(self, ctx):
 
@@ -140,30 +143,42 @@ DEFAULT FUNCTIONALITY
     @commands.command()
     async def attach(self, ctx):
         self.NotImplemented(ctx)
+    '''
 
-"""
-================================================================================
-CUSTOM FUNCTIONALITY
-================================================================================
-    These are bot functionalities that are custom to MCBot itself
-"""
-    async def daily_reminder_task():
-        """ This function individually messages all the users ho have registered
-            their trello account to the bot"""
+    #
+    #===============================================================================
+    #CUSTOM FUNCTIONALITY
+    #===============================================================================
+    #    These are bot functionalities that are custom to MCBot itself
+    #
+    async def daily_reminder_task(self):
+        ''' This function individually messages all the users ho have registered
+            their trello account to the bot '''
+        if(datetime.datetime.now().date() > self.last_reminded):
+            self.last_reminded = datetime.datetime.now().date()
+            print("reminded")
+
     async def on_ready(self):
-        """ Event to initialize bot tasks and other bot functions"""
-        self.loop.create_task(reminder_task)
+        ''' Event to initialize bot tasks and other bot functions'''
+        self.bot.loop.create_task(self.daily_reminder_task())
 
-"""
-================================================================================
-HELPER FUNCTIONS
-================================================================================
-"""
+    async def on_message(self, ctx):
+        if(ctx.message.author == self.bot.user):
+            return
+        if(ctx.message.content.startswith(self.config.bot_prefix)):
+
+    #
+    #===============================================================================
+    #HELPER FUNCTIONS
+    #===============================================================================
+    #
     def check_trello(self):
         if(self.trello_client == ""):
             return False
         else:
             return True
+    def NotImplemented(self, ctx):
+        self.send_message(ctx, "Function not implemented yet")
     async def send_message(self, ctx, message):
         if(self.channel == ""):
             channel =  ctx.message.channel
@@ -176,7 +191,5 @@ HELPER FUNCTIONS
             await channel.send(embed=embed)
         else:
             await self.channel.send(embed=embed)
-    def NotImplemented(self, ctx):
-        await self.send_message(ctx, "Function not implemented yet")
 def setup(bot):
     bot.add_cog(MCBot(bot))
