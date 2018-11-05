@@ -51,17 +51,23 @@ class MCBot:
     async def token(self, ctx):
         """Supplies the user a link to determine
         the token that the bot will use."""
-        await self.send_message(ctx, "https://trello.com/1/authorize?expiration=never&scope=read,write,account&response_type=token&name=Moon%20CommandBot&key="+self.trello_ky)
+        if(self.trello_tk == ''):
+            await self.send_message(ctx, "https://trello.com/1/authorize?expiration=never&scope=read,write,account&response_type=token&name=Moon%20CommandBot&key="+self.trello_ky)
+        else:
+            await self.send_message(ctx, "Bot is already connected to trello")
     @commands.command()
     async def link(self, ctx, api_token):
         """Links the bot to the trello account
          with the correct token"""
-        self.trello_tk = api_token
-        self.trello_client = TrelloClient(
-            api_key=self.trello_ky,
-            token=self.trello_tk
-        )
-        await self.send_message(ctx, "Received token of Token: " + self.trello_tk)
+        if(self.trello_tk == ''):
+            self.trello_tk = api_token
+            self.trello_client = TrelloClient(
+                api_key=self.trello_ky,
+                token=self.trello_tk
+            )
+            await self.send_message(ctx, "Received token of Token: " + self.trello_tk)
+        else:
+            await self.send_message(ctx, "Token already received")
     #
     #===============================================================================
     #DEFAULT FUNCTIONALITY
@@ -147,9 +153,9 @@ class MCBot:
     async def boards(self, ctx):
         if(self.check_trello()):
             boards = self.trello_client.list_boards()
-            await send_message(ctx, boards)
+            await self.send_message(ctx, boards)
         else:
-            await send_message(ctx, "Trello not initialized get the token with ```MC!token``` and pass the given token into ```MC!link```.")
+            await self.send_message(ctx, "Trello not initialized get the token with `MC!token` and pass the given token into `MC!link`.")
 
     #
     #===============================================================================
@@ -167,13 +173,15 @@ class MCBot:
     async def on_ready(self):
         """ Event to initialize bot tasks and other bot functions"""
         self.bot.loop.create_task(self.daily_reminder_task())
+        if(self.trello_tk == ''):
+            print("Start read data")
 
     async def on_message(self, msg):
         if(msg.author == self.bot.user):
             return
-        if(msg.content.startswith(self.config.prefix)):
-            await self.send_message(msg, "Invalid command")
-            await events.send_cmd_help(ctx)
+        if(msg.content.startswith(self.config.prefix[0])):
+            if(msg.content == "MC!logout"):
+                print("Start save data")
 
     #
     #===============================================================================
