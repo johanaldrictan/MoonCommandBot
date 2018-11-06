@@ -2,6 +2,9 @@
 import sys
 import time
 import datetime
+import json
+import os
+from pathlib import Path
 try:
     import discord
     from discord.ext import commands
@@ -17,6 +20,7 @@ from cogs import events
 class MCBot:
     def __init__(self, bot):
         self.config = default.get("config.json")
+        self.data = {}
         self.bot = bot
         self.trello_client = ''
         self.discord_tk = self.config.discord_token
@@ -32,6 +36,7 @@ class MCBot:
     async def assign(self,ctx):
         """Assigns bot to the current channel
         the command is on."""
+        print(ctx.message.channel)
         self.channel = ctx.message.channel
         await self.send_message(ctx, "Assigned to " + str(ctx.message.channel.name))
 
@@ -65,6 +70,13 @@ class MCBot:
                 api_key=self.trello_ky,
                 token=self.trello_tk
             )
+            if(self.data == {}):
+                self.data['trello'] = []
+                self.data['trello'].append({
+                    'trello_tk': self.trello_tk
+                })
+            else:
+                await self.send_message(ctx, "Trello already connected")
             await self.send_message(ctx, "Received token of Token: " + self.trello_tk)
         else:
             await self.send_message(ctx, "Token already received")
@@ -174,14 +186,28 @@ class MCBot:
         """ Event to initialize bot tasks and other bot functions"""
         self.bot.loop.create_task(self.daily_reminder_task())
         if(self.trello_tk == ''):
-            print("Start read data")
-
+            #read
+            file = Path("data.json")
+            if(file.is_file()):
+                 save = default.get("data.json")
+                 if(getattr(save, 'trello', False)):
+                     print("Reading token value from file: " + save.trello[0].trello_tk)
+                     self.trello_tk = save.trello[0].trello_tk
+                     self.trello_client = TrelloClient(
+                         api_key=self.trello_ky,
+                         token=self.trello_tk
+                     )
     async def on_message(self, msg):
         if(msg.author == self.bot.user):
             return
         if(msg.content.startswith(self.config.prefix[0])):
             if(msg.content == "MC!logout"):
-                print("Start save data")
+                try:
+                    #self.data['channel'] = self.channel
+                    with open("data.json", 'w', encoding = 'utf-8') as outfile:
+                        json.dump(self.data, outfile)
+                finally:
+                    outfile.close()
 
     #
     #===============================================================================
