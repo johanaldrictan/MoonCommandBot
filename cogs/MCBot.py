@@ -31,6 +31,7 @@ class MCBot:
         self.join_message = self.config.join_message
         self.current_game = self.config.playing
         self.last_reminded = datetime.datetime.now().date()
+        self.current_working_board = ''
 
     @commands.command()
     async def assign(self,ctx):
@@ -145,9 +146,6 @@ class MCBot:
     async def lists(self, ctx):
 
     @commands.command()
-    async def switch(self, ctx):
-
-    @commands.command()
     async def viewlist(self, ctx):
 
     @commands.command()
@@ -162,10 +160,23 @@ class MCBot:
     '''
 
     @commands.command()
+    async def switch(self, ctx):
+        return
+
+    @commands.command()
     async def boards(self, ctx):
         if(self.check_trello()):
             boards = self.trello_client.list_boards()
-            await self.send_message(ctx, boards)
+            embed = discord.Embed(
+                title="Boards",
+                description="Use `MC!switch BoardID` to switch the active board.",
+                color=int(self.bot_color)
+            )
+            for board in boards:
+                embed.add_field(name=board.name, value="`{boardID}`".format(boardID=board.id))
+                print(board.name)
+                print(board.id)
+            await self.send_embed(ctx, embed)
         else:
             await self.send_message(ctx, "Trello not initialized get the token with `MC!token` and pass the given token into `MC!link`.")
 
@@ -197,6 +208,11 @@ class MCBot:
                          api_key=self.trello_ky,
                          token=self.trello_tk
                      )
+                     self.data['trello'] = []
+                     self.data['trello'].append({
+                         'trello_tk': self.trello_tk
+                     })
+
     async def on_message(self, msg):
         if(msg.author == self.bot.user):
             return
