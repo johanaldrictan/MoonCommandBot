@@ -160,8 +160,18 @@ class MCBot:
     '''
 
     @commands.command()
-    async def switch(self, ctx):
-        return
+    async def switch(self, ctx, boardID):
+        if(self.check_trello()):
+            self.current_working_board = boardID
+            boards = self.trello_client.list_boards()
+            boardName = ""
+            for board in boards:
+                if(boardID == board.id):
+                    boardName = board.name
+            if(boardName != ""):
+                await self.send_message(ctx, "Switched board to {bName} `{bID}`".format(bID=boardID, bName=boardName))
+            else:
+                await self.send_message(ctx,"Board not found")
 
     @commands.command()
     async def boards(self, ctx):
@@ -174,8 +184,6 @@ class MCBot:
             )
             for board in boards:
                 embed.add_field(name=board.name, value="`{boardID}`".format(boardID=board.id))
-                print(board.name)
-                print(board.id)
             await self.send_embed(ctx, embed)
         else:
             await self.send_message(ctx, "Trello not initialized get the token with `MC!token` and pass the given token into `MC!link`.")
