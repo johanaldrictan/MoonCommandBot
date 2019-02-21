@@ -137,9 +137,6 @@ class MCBot:
     async def webhooks(self, ctx):
 
     @commands.command()
-    async def boardinfo(self, ctx):
-
-    @commands.command()
     async def card(self, ctx):
 
     @commands.command()
@@ -158,6 +155,10 @@ class MCBot:
     async def attach(self, ctx):
         self.NotImplemented(ctx)
     '''
+
+    @commands.command()
+    async def boardinfo(self, ctx):
+        return
 
     @commands.command()
     async def switch(self, ctx, boardID):
